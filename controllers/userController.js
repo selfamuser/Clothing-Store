@@ -1,10 +1,12 @@
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import expressAsyncHandler from "express-async-handler";
 import jwt from "jsonwebtoken";
 import generateToken from "../config/jwtToken.js";
 import generateRefreshToken from "../config/refreshToken.js";
 import User from "../models/userModel.js";
 import validateMongoDBId from "../utils/validateMongoDB.js";
+import sendEmail from "./emailController.js";
 
 //User Sign-up one time register
 //Notes:-
@@ -245,6 +247,43 @@ const updateUser = expressAsyncHandler(async (req, res) => {
   }
 });
 
+const forgetPasswordToken = expressAsyncHandler(async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) throw new Error("User not found with this email");
+  try {
+    const token = await user.createPasswordResetToken();
+    await user.save();
+    const resetURL = `Hi, Please follow this link to reset Your Password. This link is valid till 10 minutes from now. <a href='http://localhost:4000/api/user/reset-password/${token}'>Click Here</a>`;
+    const data = {
+      to: email,
+      text: "Hey User",
+      subject: "Forgot Password Link",
+      htm: resetURL,
+    };
+    sendEmail(data);
+    res.json(token);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const resetPassword = expressAsyncHandler(async (req, res) => {
+  const { password } = req.body;
+  const { token } = req.params;
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+  if (!user) throw new Error("Token is invalid or has expired");
+  user.password = password;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
+  res.json(user);
+});
+
 //block user by admin only
 const blockUser = expressAsyncHandler(async (req, res) => {
   try {
@@ -288,11 +327,13 @@ export {
   blockUser,
   createUser,
   deleteUser,
+  forgetPasswordToken,
   getAllUsers,
   getUser,
   handleRefreshToken,
   loginUser,
   logoutUser,
+  resetPassword,
   unblockUser,
   updatePassword,
   updateUser,

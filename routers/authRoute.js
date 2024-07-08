@@ -3,11 +3,13 @@ import {
   blockUser,
   createUser,
   deleteUser,
+  forgetPasswordToken,
   getAllUsers,
   getUser,
   handleRefreshToken,
   loginUser,
   logoutUser,
+  resetPassword,
   unblockUser,
   updatePassword,
   updateUser,
@@ -17,6 +19,8 @@ import { authHandler, isAdmin } from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
 router.post("/register", createUser);
+router.post("/forgot-password-token", authHandler, forgetPasswordToken);
+router.post("/reset-password/:token", resetPassword);
 router.post("/login", loginUser);
 router.put("/updatePassword", authHandler, updatePassword);
 router.get("/refreshToken", handleRefreshToken);

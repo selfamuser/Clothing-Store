@@ -7,6 +7,7 @@ import morgan from "morgan";
 import dbConnect from "./config/dbConnect.js";
 import { errorHandler, notFound } from "./middlewares/errorHandler.js";
 import authRouter from "./routers/authRoute.js";
+import blogRoute from "./routers/blogRoute.js";
 import productRoute from "./routers/productRoute.js";
 
 const app = express();
@@ -30,6 +31,7 @@ app.use(cors());
 //routes
 app.use("/api/user", authRouter);
 app.use("/api/product", productRoute);
+app.use("/api/blog", blogRoute);
 
 //middlewares
 app.use(notFound);
