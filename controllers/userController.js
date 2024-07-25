@@ -92,7 +92,7 @@ const loginUser = expressAsyncHandler(async (req, res) => {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 10 * 60 * 1000,
     });
 
     res.json({
@@ -171,6 +171,8 @@ const logoutUser = expressAsyncHandler(async (req, res) => {
       secure: true, // Set secure flag based on environment
     });
     return res.sendStatus(204); // No content
+  } else {
+    console.log("User Loged Out");
   }
 
   try {
@@ -186,6 +188,7 @@ const logoutUser = expressAsyncHandler(async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
 //get all users
 
 const getAllUsers = expressAsyncHandler(async (req, res) => {

@@ -7,9 +7,12 @@ import morgan from "morgan";
 import dbConnect from "./config/dbConnect.js";
 import { errorHandler, notFound } from "./middlewares/errorHandler.js";
 import authRouter from "./routers/authRoute.js";
+import blogCategoryRoute from "./routers/blogCategoryRoute.js";
 import blogRoute from "./routers/blogRoute.js";
+import couponRoute from "./routers/couponRoute.js";
+import productBrandRoute from "./routers/productBrandRoute.js";
+import productCategoryRoute from "./routers/productCategoryRoute.js";
 import productRoute from "./routers/productRoute.js";
-
 const app = express();
 
 dotenv.config();
@@ -32,7 +35,10 @@ app.use(cors());
 app.use("/api/user", authRouter);
 app.use("/api/product", productRoute);
 app.use("/api/blog", blogRoute);
-
+app.use("/api/productCategory", productCategoryRoute);
+app.use("/api/productBrand", productBrandRoute);
+app.use("/api/blogCategory", blogCategoryRoute);
+app.use("/api/coupon", couponRoute);
 //middlewares
 app.use(notFound);
 app.use(errorHandler);

@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
-const productSchema = new mongoose.Schema(
+// Declare the Schema of the Mongo model
+let productSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -37,30 +38,29 @@ const productSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    images: {
-      type: Array,
-    },
+    images: [
+      {
+        public_id: String,
+        url: String,
+      },
+    ],
     color: [],
     tags: String,
-    rating: [
+    ratings: [
       {
         star: Number,
         comment: String,
-        postedBy: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-        },
+        postedby: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
       },
     ],
-    totalRating: {
-      type: Number,
+    totalrating: {
+      type: String,
       default: 0,
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
+//Export the model
 const Product = mongoose.model("Product", productSchema);
 export default Product;
